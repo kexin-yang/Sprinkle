@@ -1,6 +1,3 @@
-# 考虑把上面的函数写到bubble class 里，并且判断是否和应该有的单词一样，如果有的话，list里面东西-1，没有的话展示错在哪
-
-
 import speech_recognition as sr
 
 def call():
@@ -21,9 +18,8 @@ def call():
         return message
 
 def recognizeWords():
-    #word = ["apple","i","really","like"]
     r = sr.Recognizer()
-    # cited from internet(line24-29,36-37)
+    # line24-29,36-37 cited from internet, speech recogntion module
     with sr.Microphone() as source:
         print("Say something");
         audio = r.listen(source)
@@ -33,5 +29,3 @@ def recognizeWords():
         return spoken
     except:
         pass;
-
-recognizeWords()

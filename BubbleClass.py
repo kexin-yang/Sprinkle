@@ -53,20 +53,21 @@ def init(data):
     data.time = 0
     data.hearMessage = ""
     data.heardWord = ""
-    data.speakingInstruction = ""
+    data.speakingInstruction = "Say a word in the bubble!"
 def mouthPressed(event,data):
     pass
 def keyPressed(event,data):
     pass
 def timerFired(data):
     data.time += 1
-    print("message:",data.hearMessage)
+    print("instruction",data.speakingInstruction)
+    print("hearMessage:",data.hearMessage)
     for bubble in reversed(data.bubbles):
         if bubble.word == data.heardWord:
             data.bubbles = []
     if data.time % 5 == 0:
         putBubble(data)
-    if data.time % 30 == 0:
+    if data.time % 8 == 0:
         checkIfHeard(data)
 
 def checkIfHeard(data):
@@ -122,7 +123,7 @@ def redrawAll(canvas,data):
 
 
 #################################################################
-# cited from course note: the run function
+# cited from course note: the run function- line 128-169
 #################################################################
 
 def runBubbles(width=600, height=600):
@@ -169,4 +170,4 @@ def runBubbles(width=600, height=600):
     print("bye!")
 
 
-runBubbles()
+
