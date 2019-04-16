@@ -13,6 +13,8 @@ def distance(x1,y1,x2,y2):
     # get to the next scene, give a set of new words
 
 
+
+ 
 #Some Features I want implemented later:
     # want bubble to bounce off each other
     # want the r to be in according to the length of the words
