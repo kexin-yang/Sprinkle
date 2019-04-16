@@ -1,4 +1,5 @@
 import random
+import hearWords
 class Bubble():
     # define bubble
     def __init__(self,cx,cy,r,color,direction,word):
@@ -10,7 +11,7 @@ class Bubble():
         self.direction = direction
         self.word = word
 
-    # cite from hw5,15112
+    # cite from hw5,15112, line 15-18
     def draw(self, canvas):
         # draw the bubbles on canvas
         canvas.create_oval(self.cx-self.r,self.cy-self.r,self.cx+self.r, self.cy+self.r, fill= self.color)
@@ -23,6 +24,7 @@ class Bubble():
     def collideWithBorder(self,height,width):
         # see if the bubble collide with border
         return self.cx-self.r <= 0 or self.cx+self.r>= width or self.cy-self.r <= 0 or self.cy+self.r>= height
+
     def touchOtherBubble(self,other):
         # see if the bubble touches other bubble
         if isinstance(other,Bubble) and distance(other.cx,other.cy, self.cx,self.cy)<other.r+self.r:
@@ -38,21 +40,59 @@ class Bubble():
 
 # Graphic function
 from tkinter import *
+def generateWords():
+    # this function provide a pool of words that can make senteces, and randomly choose from them
+    wordPool = (["he","really","likes","apples"],["i","can","play","football"],["they","enjoy","having","dinner","together"])
+    word = random.choice(wordPool)
+    return word
+
 def init(data):
     data.score = 0
     data.bubbles = []
-    data.words = ["I", "really", "like","apples"]
+    data.words = generateWords()
     data.time = 0
-
+    data.hearMessage = ""
+    data.heardWord = ""
+    data.speakingInstruction = ""
 def mouthPressed(event,data):
     pass
 def keyPressed(event,data):
     pass
 def timerFired(data):
     data.time += 1
-    if data.time% 20 == 0:
+    print("message:",data.hearMessage)
+    for bubble in reversed(data.bubbles):
+        if bubble.word == data.heardWord:
+            data.bubbles = []
+    if data.time % 5 == 0:
         putBubble(data)
-        print(data.bubbles)
+    if data.time % 30 == 0:
+        checkIfHeard(data)
+
+def checkIfHeard(data):
+    # this function check if we hear any words in the bubble
+    data.speakingInstruction = "Say a word in the bubble!"
+    spoken = hearWords.recognizeWords()
+    print("spoken",spoken)
+    if spoken == None:
+        data.hearMessage = "We didn't hear what you say, try again!"
+        #data.speakingInstruction = ""
+        print(data.hearMessage)
+    elif spoken in data.words:
+        data.hearMessage = "You spoke '%s' correctly!" % spoken
+        #data.speakingInstruction = ""
+        data.heardWord = spoken
+        data.words.remove(spoken)
+        print(data.words)
+        bubbleBurst(data)
+    else:
+        data.hearMessage = "Did you said '%s'? \n Try again by saying words in the bubble!" % spoken
+        #data.speakingInstruction = ""
+        print(data.hearMessage)
+
+def bubbleBurst(data):
+    pass
+
 def putBubble(data):
     # this function places bubble in the data
     for i in range(len(data.words)):
@@ -68,16 +108,18 @@ def putBubble(data):
         speed = random.randint(speedLow,speedHigh)
         bubble = Bubble(cx,cy,r,color,direction,data.words[i])
         data.bubbles.append(bubble)
-def checkIfHeard(data):
-    pass
 
 def redrawAll(canvas,data):
     canvas.create_rectangle(0,0,data.width,data.height,fill = "lightblue")
     for bubble in data.bubbles:
         bubble.draw(canvas)
-        print("iii")
     canvas.create_text(data.width/2, data.height, anchor="s", fill="yellow",
                        font="Arial 24 bold", text="Score: " + str(data.score))
+    canvas.create_text(data.width, 0.8* data.height, anchor="e", fill="brown",
+                       font="Arial 30 bold", text=data.hearMessage)
+    canvas.create_text(data.width, 0.5 * data.height, anchor="e", fill="brown",
+                       font="Arial 30 bold", text=data.speakingInstruction)
+
 
 #################################################################
 # cited from course note: the run function
@@ -125,3 +167,6 @@ def runBubbles(width=600, height=600):
     # and launch the app
     root.mainloop()  # blocks until window is closed
     print("bye!")
+
+
+runBubbles()
