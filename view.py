@@ -7,7 +7,7 @@ def drawIntroScene(canvas,data):
                                 (0.5 * data.height + 150), fill="white")
         canvas.create_text(data.width, 0.5 * data.height, anchor="e", fill="brown",
                            font="Arial 30 bold", text="Intro Page")
-def displayHearMsg(canvas,data):
+"""def displayHearMsg(canvas,data):
     # this function is used to display message only for 2 seconds
     canvas.create_text(data.width, 0.8 * data.height, anchor="e", fill="brown",
                        font="Arial 30 bold", text=data.hearMessage)
@@ -16,7 +16,7 @@ def displayHearMsg(canvas,data):
 def displayEmptyMsg(canvas,data):
     print("now go away")
     canvas.create_text(data.width, 0.8 * data.height, anchor="e", fill="brown",
-                       font="Arial 30 bold", text="")
+                       font="Arial 30 bold", text="")"""
 
 def drawSpeakScene(canvas,data):
     if data.speakMode == True:
@@ -26,7 +26,8 @@ def drawSpeakScene(canvas,data):
             bubble.draw(canvas)
         canvas.create_text(data.width / 2, data.height, anchor="s", fill="yellow",
                            font="Arial 24 bold", text="Score: " + str(data.score))
-        displayHearMsg(canvas,data)
+        canvas.create_text(data.width, 0.8 * data.height, anchor="e", fill="brown",
+                           font="Arial 30 bold", text=data.hearMessage)
         canvas.create_text(data.width, 0.5 * data.height, anchor="e", fill="brown",
                            font="Arial 30 bold", text=data.speakingInstruction)
         # draw Next button

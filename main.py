@@ -1,5 +1,12 @@
+import random
+import speech_recognition as sr
 import hearWords
+from view import *
+from model import *
+from controller import *
 import BubbleClass
+
+
 BubbleClass.runBubbles()
 
 # helper functions
@@ -30,6 +37,8 @@ def distance(x1,y1,x2,y2):
     # get ready to speak, 3,2,1?
     # Speak a sentence?
     # learner can choose whether they want to sort or continue speaking.
+    # insert picture
+
 
 
 

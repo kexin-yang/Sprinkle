@@ -1,6 +1,6 @@
 import random
 import speech_recognition as sr
-from view import *
+import hearWords
 class Bubble():
     # define bubble
     def __init__(self,cx,cy,r,color,direction,word):
@@ -43,7 +43,8 @@ class Bubble():
 from tkinter import *
 def generateWords():
     # this function provide a pool of words that can make senteces, and randomly choose from them
-    wordPool = (["he","really","likes","apples"],["i","can","play","football"],["they","usually","eat","dinner","together"])
+    wordPool = (["he", "really", "likes", "apples"], ["i", "can", "play", "football"],
+                ["they", "usually", "eat", "dinner", "together"])
     word = random.choice(wordPool)
     return word
 
@@ -59,38 +60,38 @@ def init(data):
     # speaking mode attribute
     data.hearMessage = ""
     data.heardWord = ""
-    data.speakingInstruction = "Say a word in the bubble!"
+    data.speakingInstruction = ""
     data.nextx1, data.nexty1, data.nextx2, data.nexty2 \
-        = data.width * 0.05,data.height * 0.85, data.width * 0.15, data.height * 0.95
+        = data.width * 0.05, data.height * 0.85, data.width * 0.15, data.height * 0.95
     # sorting mode attribute
 
 
-
+# CONTROLLER
 def mousePressed(event,data):
     if data.introMode == True:
         if event.y> (0.5*data.height - 150) and event.y <(0.5*data.height + 150) \
                 and event.x <(0.5*data.width + 200) and event.x >(0.5*data.width - 200):
             data.introMode = False
             data.speakMode = True
+
 def keyPressed(event,data):
     pass
+
+
 def timerFired(data):
     if data.speakMode == True:
         if data.time % 5 == 0:
-            print("time to put")
             putBubble(data)
-        checkIfHeard(data)
         data.time += 1
         for bubble in reversed(data.bubbles):
             if bubble.word == data.heardWord:
                 data.bubbles = []
-
-        # if data.time % 8 == 0:
-        #     checkIfHeard(data)
+        if data.time % 8 == 0:
+            checkIfHeard(data)
 
 def recognizeWords():
     r = sr.Recognizer()
-    # line24-29,36-37 cited from internet, speech recognition module
+
     with sr.Microphone() as source:
         print("Say something");
         audio = r.listen(source)
@@ -102,6 +103,7 @@ def recognizeWords():
         pass;
 
 def listen(data):
+    # besides the data.speakingInstruction, this function is cited from the python speech recognition module
     # this function record what is heard
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -117,32 +119,35 @@ def listen(data):
 
 def checkIfHeard(data):
     # this function check if we hear any words in the bubble
-    # check if list is empty
-    if len(data.words) > 0:
-        print("words:", data.words)
-        spoken = listen(data)
-        if spoken == None:
-            data.hearMessage = "We didn't hear what you say, try again!"
-            #data.speakingInstruction = "testing"
-            print(data.hearMessage)
-        elif spoken in data.words:
-            data.hearMessage = "You spoke '%s' correctly!" % spoken
-            #data.speakingInstruction = ""
-            data.heardWord = spoken
-            data.words.remove(spoken)
-            print(data.words)
-            #checkIfHeard(data)
-        else:
-            data.hearMessage = "Did you said '%s'? \n Try again by saying words in the bubble!" % spoken
-            #data.speakingInstruction = ""
-            print(data.hearMessage)
-            #checkIfHeard(data)
+    data.speakingInstruction = "Say a word in the bubble!"
+    spoken = hearWords.recognizeWords()
+    print("spoken",spoken)
+    if spoken == None:
+        data.hearMessage = "We didn't hear what you say, try again!"
+        #data.speakingInstruction = ""
+        print(data.hearMessage)
+    elif spoken in data.words:
+        data.hearMessage = "You spoke '%s' correctly!" % spoken
+        #data.speakingInstruction = ""
+        data.heardWord = spoken
+        data.words.remove(spoken)
+        checkIfEnd1(data)
+        data.score += 3
+        print(data.words)
+        bubbleBurst(data)
+    else:
+        data.hearMessage = "Did you said '%s'? \n Try again by saying words in the bubble!" % spoken
+        #data.speakingInstruction = ""
+        print(data.hearMessage)
+def checkIfEnd1(data):
+    if len(data.words) == 0:
+        data.speakMode = False
+        data.sortMode = True
 
 def bubbleBurst(data):
     pass
 
 def putBubble(data):
-    print("??")
     # this function places bubble in the data
     for i in range(len(data.words)):
         print(i)
@@ -159,6 +164,77 @@ def putBubble(data):
         data.bubbles.append(bubble)
         print("bubb",data.bubbles)
 
+#=======================================================================================================================
+# sort page
+
+class Box:
+    def __init__(self,cx,cy,side,color,word):
+        self.cx = cx
+        self.cy = cy
+        self.side = side
+        self.color = color
+        self.word = word
+
+    # cite from hw5,15112, line 15-18
+    def draw(self, canvas):
+        # draw the box on canvas
+        canvas.create_rectangle(self.cx - 0.5 * side,self.cy- 0.5 * side, self.cx + 0.5 * side, self.cy + 0.5 * side, fill= self.color)
+        canvas.create_text(self.cx,self.cy,text = self.word)
+def textEntry():
+    e = Entry(master, width = 50, bg = "pink", foreground = "brown")
+    e.pack(ipadx = 200,ipady = 20, padx = 50,pady = 100)
+    e.focus_set()
+    typed = e.get()
+    b = Button(master, text="OK", width=10, height = 50, background = "purple",command=callback)
+    b.pack(ipadx = 20,ipady =20)
+
+
+
+
+# VIEW
+
+def drawIntroScene(canvas,data):
+    if data.introMode == True:
+        # draw background
+        canvas.create_rectangle(0, 0, data.width, data.height, fill="gold")
+        # draw start button
+        canvas.create_rectangle((0.5 * data.width - 200), (0.5 * data.height - 150), (0.5 * data.width + 200),
+                                (0.5 * data.height + 150), fill="white")
+        canvas.create_text(data.width, 0.5 * data.height, anchor="e", fill="brown",
+                           font="Arial 30 bold", text="Intro Page")
+
+def drawSpeakScene(canvas,data):
+    if data.speakMode == True:
+        canvas.create_rectangle(0, 0, data.width, data.height, fill="lightblue")
+        for bubble in data.bubbles:
+            print("bubble",bubble)
+            bubble.draw(canvas)
+        canvas.create_text(data.width / 2, data.height, anchor="s", fill="yellow",
+                           font="Arial 24 bold", text="Score: " + str(data.score))
+        canvas.create_text(data.width, 0.8 * data.height, anchor="e", fill="brown",
+                           font="Arial 30 bold", text=data.hearMessage)
+        canvas.create_text(data.width, 0.5 * data.height, anchor="e", fill="brown",
+                           font="Arial 30 bold", text=data.speakingInstruction)
+        # draw Next button
+        canvas.create_rectangle(data.nextx1, data.nexty1, data.nextx2, data.nexty2, fill = "green")
+
+def drawSortScene(canvas,data):
+    if data.sortMode == True:
+        canvas.create_rectangle(0, 0, data.width, data.height, fill="pink")
+
+        canvas.create_text(data.width / 2, data.height, anchor="s", fill="yellow",
+                           font="Arial 24 bold", text="Score: " + str(data.score))
+        canvas.create_text(data.width, 0.8 * data.height, anchor="e", fill="brown",
+                           font="Arial 30 bold", text=data.hearMessage)
+        canvas.create_text(data.width, 0.5 * data.height, anchor="e", fill="brown",
+                           font="Arial 30 bold", text=data.speakingInstruction)
+        # draw Next button
+        canvas.create_rectangle(data.nextx1, data.nexty1, data.nextx2, data.nexty2, fill = "green")
+
+def redrawAll(canvas,data):
+    drawIntroScene(canvas,data)
+    drawSpeakScene(canvas,data)
+    drawSortScene(canvas,data)
 
 #################################################################
 # cited from course note: the run function- line 128-169
