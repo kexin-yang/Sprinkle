@@ -8,8 +8,7 @@ Description: In this project, I made an educational game with regard to language
 * There will two parts of the game: 1) Speaking 2) Sorting
 
 * Speaking: there will be bubbles falling from the top of the screen to the bottom of the screen, each bubble will contain an English word inside it.
-
-* The learner needs to speak out the word in the bubble to make them disappear and get points.
+   The learner needs to speak out the word in the bubble to make them disappear and get points.
 
 * Sorting: The learner sort the word in the correct grammatical order, to gain points. They will gain 5 points for the easy level, and 10 points for the level 2 which is harder and involve propositional phrases.
 
